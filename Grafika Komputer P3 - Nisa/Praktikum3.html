@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #mycanvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas" width="300" height="300">
+    </canvas>
+    <script>
+        const kanvas = document.querySelector("#mycanvas");
+        console.log(kanvas);
+        const ctx = kanvas.getContext("2d");
+
+        // ambil data
+        let dataGambar = ctx.getImageData(0,0,kanvas.width, kanvas.height);
+
+        // membuat sebuah function / i = x + (y . w) + 4
+        function gbr_titik(datanya, posisi, warna){
+            // let x = posisi.x;
+            // let y = posisi.y;
+            let {x, y} = posisi;
+            let {r, g, b} = warna;
+            let index = (x + y * kanvas.width) * 4;
+            datanya.data[index] = r;
+            datanya.data[index+1] = g;
+            datanya.data[index+2] = b;
+            datanya.data[index+3] = 255;
+        }
+        
+        // function lingkaran(datanya, Xc, Yc, radius, warnanya){
+        //     for (x = Xc - radius; x < Xc + radius; x++){
+        //         y = Yc + Math.sqrt(Math.pow(radius,2) - Math.pow((x-Xc),2));
+        //         gbr_titik(datanya, {x:Math.ceil(x),y:Math.ceil(y)}, warnanya);
+        //         y = Yc - Math.sqrt(Math.pow(radius,2) - Math.pow((x-Xc),2));
+        //         gbr_titik(datanya, {x:Math.ceil(x),y:Math.ceil(y)}, warnanya);
+        //     }
+        // }
+
+        function lingkaran2(datanya, Xc, Yc, radius, warnanya){
+            for (let sudut = 0; sudut < 2 * Math.PI; sudut+=0.01) {
+                let x = Xc + radius * Math.cos(sudut);
+                let y = Yc + radius * Math.sin(sudut);
+                gbr_titik(datanya, {x:Math.round(x), y:Math.round(y)}, warnanya);
+            }
+        }
+
+        let jalan = 0
+        function lingkaranJln(){
+            ctx.clearRect(0,0,kanvas.width, kanvas.height);
+            dataGambar = ctx.getImageData(0,0,kanvas.width, kanvas.height);
+
+            lingkaran2(dataGambar, 150,150, 50+jalan, [255,0,0]);
+            jalan = (jalan + 1)%200
+            ctx.putImageData(dataGambar, 0,0);
+            requestAnimationFrame(lingkaranJln);
+        }
+        
+        lingkaranJln();
+        
+        // lingkaran2(dataGambar, 150, 150, 100, {r:255,g:0,b:0}); 
+        ctx.putImageData(dataGambar,0,0);
+        
+</script>
+</body>
+</html>
